@@ -7,7 +7,7 @@ public class test {
         DatabaseConnect db = new DatabaseConnect("test.db");
 
         db.setupDatabase();
-        // db.registerUser("Jeffery", "123456", "encrypt");
+        db.registerUser("Jeffery", "123456", "encrypt");
         //db.registerUser("williams", "123456", "encrypt2");
 
         db.loginUser("Jeffery", "123456");

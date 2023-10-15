@@ -121,19 +121,18 @@ public class DatabaseConnect {
 
     public int loginUser(String username, String password) {
 
-        String sqlString = "SELECT USERNAME, password FROM tbl_user_logins WHERE username='" + username +"'";
+        String sqlString = "SELECT USERNAME, password FROM tbl_user_logins WHERE username='" + username + "'";
 
         try (Connection connection = this.connect();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlString)) {
 
-            // if (rs.getFetchSize() == 0) {
-                // return 1;
-            // }
-
             rs.next();
-            System.out.println(rs.getString("USERNAME"));
-            System.out.println(rs.getString("PASSWORD"));
+
+            if (rs.getString("USERNAME") == null) {
+                System.out.println("User " + username + " does not exist");
+                return 1;
+            }
 
             if (rs.getString("USERNAME").compareTo(username) == 0 &&
                     rs.getString("PASSWORD").compareTo(password) == 0) {
