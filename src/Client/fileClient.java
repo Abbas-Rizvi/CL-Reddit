@@ -103,6 +103,7 @@ public class fileClient {
         String line = input.readLine();
 
         System.out.println(line);
+        output.flush();
 
         if (line.equals("User has not been logged in!")) {
 
@@ -115,7 +116,11 @@ public class fileClient {
             String body = scan.next();
 
             output.println(subject);
+            output.flush();
+
             output.println(body);
+            output.flush();
+
 
             System.out.println(input.readLine());
 

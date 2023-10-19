@@ -90,7 +90,7 @@ public class ServerThread extends Thread {
                                     output.println("Login Failed");
                                 }
 
-                                // break;
+                                break;
 
                             case "2":
 
@@ -125,12 +125,17 @@ public class ServerThread extends Thread {
                                     output.println("User has not been logged in!");
                                 }
 
+                                break;
+
                             case "4":
 
                                 if (loggedIn) {
 
-                                    String line = input.readLine();
-                                    int postId = Integer.parseInt(line);
+                                    String line = null;
+                                    // while (input.readLine() == null)
+                                    //     line = input.readLine();
+
+                                    int postId = Integer.parseInt(input.readLine());
 
                                     db.upVotePost(postId);
                                     System.out.println("Upvote req sent");
@@ -139,6 +144,8 @@ public class ServerThread extends Thread {
                                 } else {
                                     output.println("User has not been logged in!");
                                 }
+
+                                break;
 
                             case "5":
                                 if (loggedIn) {
@@ -155,6 +162,8 @@ public class ServerThread extends Thread {
                                 } else {
                                     output.println("User has not been logged in!");
                                 }
+
+                                break;
                         }
 
                         break;
@@ -177,6 +186,7 @@ public class ServerThread extends Thread {
         // close thread and server
         finally {
             try {
+                loggedIn=false;
                 input.close();
                 s.close();
                 output.close();
