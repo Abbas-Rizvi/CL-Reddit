@@ -2,6 +2,7 @@ package Client;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,7 +17,7 @@ public class fileClient {
         try {
             Socket s = new Socket("localhost", 6666);
             BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+            PrintWriter output = new PrintWriter(s.getOutputStream(), true);
 
             // System.out.println(input.readLine());
 
@@ -25,25 +26,67 @@ public class fileClient {
             // will start by creating and initializing to main menu selection
 
             String userInput;
-            out.flush();
+            String serverOutput;
+            output.flush();
 
-            Boolean menu = false;
+            Boolean menu = true;
 
             while (true) {
 
-                if (!menu){
-                    menu = true;
-                    userInput = mainMenu();
-                } else
-                    userInput = scan.nextLine();
+                userInput = mainMenu();
 
-                if (input.ready()){
-                    System.out.print(input.readLine());
+                output.println(userInput);
+
+                switch (userInput) {
+
+                    case "MENU;1":
+                        loginUser(input, output);
+                        break;
+
+                    case "MENU;2":
+                        registerUser(input, output);
+                        break;
+
+                    case "MENU;3":
+                        listPosts(input, output);
+                        break;
+                    case "MENU;4":
+                        upVotePost(input, output);
+                        break;
+
+                    case "MENU;5":
+                        newPost(input, output);
+
+                        break;
+                    case "MENU;6":
+                        s.close();
+                        break;
+                    default:
+                        break;
+
                 }
 
-                // print to server & flush buffer
-                out.println(userInput.trim());
-                out.flush();
+                // out.flush();
+
+                // if (menu){
+                // menu = false;
+                // userInput = mainMenu();
+                // } else
+                // userInput = scan.nextLine();
+
+                // // print to server & flush buffer
+                // out.println(userInput.trim());
+                // out.flush();
+
+                // while (input.ready()){
+                // serverOutput = input.readLine();
+
+                // if (serverOutput.equals("PRINT_MENU")){
+                // menu =true;
+                // } else {
+                // System.out.println(serverOutput);
+                // }
+                // }
 
             }
 
@@ -55,18 +98,101 @@ public class fileClient {
 
     }
 
+    private static void newPost(BufferedReader input, PrintWriter output) throws IOException {
+
+        String line = input.readLine();
+
+        System.out.println(line);
+
+        if (line.equals("User has not been logged in!")) {
+
+        } else {
+
+            System.out.print("Subject: ");
+            String subject = scan.next();
+
+            System.out.print("Body: ");
+            String body = scan.next();
+
+            output.println(subject);
+            output.println(body);
+
+            System.out.println(input.readLine());
+
+        }
+
+    }
+
+    private static void upVotePost(BufferedReader input, PrintWriter output) throws IOException {
+        System.out.println("Enter post ID to upvote: ");
+
+        int usrInput = -1;
+        boolean valid = false;
+
+        while (valid == false) {
+            System.out.print("User Selection: ");
+
+            if (scan.hasNextInt()) {
+                usrInput = scan.nextInt();
+                valid = true;
+
+            } else {
+                System.out.println("Invalid input");
+                scan.next();
+            }
+        }
+
+        output.println(usrInput);
+        System.out.println(input.readLine());
+
+    }
+
+    private static void listPosts(BufferedReader input, PrintWriter output) throws IOException {
+
+        String line;
+
+        System.out.println("ID\t" +
+                "USER\t\t" +
+                "SCORE\t" +
+                "SUBJECT\t\t" +
+                "BODY\t\t");
+
+        String[] compononts = new String[5];
+
+        while (!(line = input.readLine()).equals("FINISHED")) {
+            // System.out.println(line);
+
+            try {
+                compononts = line.split(";", 5);
+            } catch (ArrayIndexOutOfBoundsException e) {
+
+            }
+
+            System.out.println(compononts[0] + "\t" +
+                    compononts[1] + "\t\t" +
+                    compononts[2] + "\t" +
+                    compononts[3] + "\t\t" +
+                    compononts[4] + "\t\t");
+
+        }
+
+    }
+
     // prints main menu for user options
     // returns value for otpion pass from user
     public static String mainMenu() {
 
-        String welcome = "Welcome to CL-Reddit!\n" +
+        String welcome = "\n\nWelcome to CL-Reddit!\n" +
                 "You will be able to view and post messages to the forum, all over the command line!";
 
         String menu = "--- Menu ---\n" +
                 "1.Login\n" +
                 "2.Register\n" +
                 "3.Read Posts\n" +
-                "4.Quit\n";
+                "4.Upvote Post\n" +
+                "5.New Post\n" +
+
+                "6.Quit\n";
 
         System.out.println(welcome);
         System.out.println(menu);
@@ -82,7 +208,7 @@ public class fileClient {
             if (scan.hasNextInt()) {
                 input = scan.nextInt();
 
-                if (input > 0 && input <= 4) {
+                if (input > 0 && input <= 6) {
                     valid = true;
                     return "MENU;" + input;
                 } else {
@@ -98,4 +224,31 @@ public class fileClient {
 
     }
 
+    public static void registerUser(BufferedReader input, PrintWriter output) throws IOException {
+
+        System.out.print("Username: ");
+        String username = scan.next();
+
+        System.out.print("Password: ");
+        String password = scan.next();
+
+        output.println(username);
+        output.println(password);
+
+        System.out.println(input.readLine());
+    }
+
+    public static void loginUser(BufferedReader input, PrintWriter output) throws IOException {
+
+        System.out.print("Username: ");
+        String username = scan.next();
+
+        System.out.print("Password: ");
+        String password = scan.next();
+
+        output.println(username);
+        output.println(password);
+
+        System.out.println(input.readLine());
+    }
 }

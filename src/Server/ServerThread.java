@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.io.Console;
 import java.util.Scanner;
 
@@ -55,11 +57,17 @@ public class ServerThread extends Thread {
             // output.println("Connected!");
             while ((line = input.readLine()) != null) {
 
-                System.out.println(line);
-
+                output.flush();
                 String[] parts = line.split(";");
-                option = parts[0]; // "MENU"
-                value = parts[1]; // "1"
+
+                try {
+                    option = parts[0]; // "MENU"
+                    value = parts[1]; // "1"
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // output.println("PRINT_MENU");
+                    // printMenu(output);
+                    continue;
+                }
 
                 // System.out.println(option);
                 // System.out.println(value);
@@ -71,18 +79,8 @@ public class ServerThread extends Thread {
                         switch (value) {
 
                             case "1":
-                                // input.readLine();
-                                // username = input.readLine();
 
-                                output.println("Enter Username: ");
-
-                                while (input.readLine() == "" && input.readLine() != null)
-                                    username = input.readLine();
-
-                                // while (!input.ready()) {
-                                // Thread.sleep(100);
-                                // }
-                                output.println("Enter Password: ");
+                                username = input.readLine();
                                 password = input.readLine();
 
                                 if (db.loginUser(username, password.toString()) == 0) {
@@ -92,33 +90,71 @@ public class ServerThread extends Thread {
                                     output.println("Login Failed");
                                 }
 
-                                break;
+                                // break;
 
                             case "2":
-                                // input.readLine();
-                                username = input.readLine();
 
-                                output.println("Enter Username: ");
                                 username = input.readLine();
-
-                                // while (!input.ready()) {
-                                // Thread.sleep(100);
-                                // }
-                                output.println("Enter Password: ");
                                 password = input.readLine();
 
-                                if (db.loginUser(username, password.toString()) == 0) {
+                                if (db.registerUser(username, password.toString()) == 0) {
                                     loggedIn = true;
-                                    output.println("Looged In!");
+                                    output.println("User " + username + " Registered!");
                                 } else {
-                                    output.println("Login Failed");
+                                    output.println("Registration Failed");
                                 }
 
                                 break;
 
                             case "3":
-                                exit = true;
-                                break;
+
+                                if (loggedIn) {
+
+                                    System.out.println("Reading Posts...");
+                                    String[] posts = db.listPosts();
+                                    String postList = "";
+
+                                    for (String str : posts) {
+                                        output.println(str);
+                                        output.flush();
+                                    }
+
+                                    output.println("FINISHED");
+
+                                } else {
+                                    output.println("User has not been logged in!");
+                                }
+
+                            case "4":
+
+                                if (loggedIn) {
+
+                                    String line = input.readLine();
+                                    int postId = Integer.parseInt(line);
+
+                                    db.upVotePost(postId);
+                                    System.out.println("Upvote req sent");
+                                    output.println("Post has been upvoted!");
+
+                                } else {
+                                    output.println("User has not been logged in!");
+                                }
+
+                            case "5":
+                                if (loggedIn) {
+
+                                    output.println("New Post:");
+
+                                    String subject = input.readLine();
+                                    String body = input.readLine();
+    
+                                    db.newPost(username, subject, body);
+                                    output.println("Post Created!");
+
+
+                                } else {
+                                    output.println("User has not been logged in!");
+                                }
                         }
 
                         break;
@@ -149,6 +185,7 @@ public class ServerThread extends Thread {
                 System.out.println("Socket Close Error");
             }
         }
+
     }
 
 }
