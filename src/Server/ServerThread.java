@@ -3,6 +3,7 @@ package Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.io.Console;
@@ -11,9 +12,13 @@ import java.util.Scanner;
 public class ServerThread extends Thread {
 
     String line = null;
-    BufferedReader is = null;
-    PrintWriter os = null;
+    BufferedReader input = null;
+    PrintWriter output = null;
     Socket s = null;
+    static boolean exit;
+    private static String username;
+    private static String password;
+    private static Boolean loggedIn = false;
 
     private static Scanner scanner = new Scanner(System.in);
     private static DatabaseConnect db = new DatabaseConnect("test.db");
@@ -27,54 +32,101 @@ public class ServerThread extends Thread {
 
         // database variables
         db.setupDatabase();
-        String username;
-        char[] password;
+
+        // flag for exiting program
+        boolean exit = false;
 
         // setup buffered read write for input and output streams
         try {
-            is = new BufferedReader(new InputStreamReader(s.getInputStream()));
-            os = new PrintWriter(s.getOutputStream());
+            input = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            output = new PrintWriter(s.getOutputStream(), true);
 
         } catch (IOException e) {
             System.out.println("IO error in server thread");
         }
 
-        // main code
-        // to be run on thread
-
-        int userOption = mainMenu();
-
-        switch (userOption) {
-
-            case 1:
-                System.out.println("Enter username: ");
-                username = scanner.nextLine();
-
-                password = console.readPassword("Enter password");
-
-                db.loginUser(username, password.toString());
-
-                break;
-
-            case 2:
-
-                // db.registerUser(username, password.toString());
-                break;
-
-            case 3:
-                break;
-        }
-
         try {
 
             // read line from user
-            line = is.readLine();
-            while (line.compareTo("QUIT") != 0) {
+            // line = input.readLine();
+            String option;
+            String value;
 
-                os.println(line);
-                os.flush();
-                System.out.println("Response to Client  :  " + line);
-                line = is.readLine();
+            // output.println("Connected!");
+            while ((line = input.readLine()) != null) {
+
+                System.out.println(line);
+
+                String[] parts = line.split(";");
+                option = parts[0]; // "MENU"
+                value = parts[1]; // "1"
+
+                // System.out.println(option);
+                // System.out.println(value);
+
+                switch (option) {
+
+                    case ("MENU"):
+
+                        switch (value) {
+
+                            case "1":
+                                // input.readLine();
+                                // username = input.readLine();
+
+                                output.println("Enter Username: ");
+
+                                while (input.readLine() == "" && input.readLine() != null)
+                                    username = input.readLine();
+
+                                // while (!input.ready()) {
+                                // Thread.sleep(100);
+                                // }
+                                output.println("Enter Password: ");
+                                password = input.readLine();
+
+                                if (db.loginUser(username, password.toString()) == 0) {
+                                    loggedIn = true;
+                                    output.println("Looged In!");
+                                } else {
+                                    output.println("Login Failed");
+                                }
+
+                                break;
+
+                            case "2":
+                                // input.readLine();
+                                username = input.readLine();
+
+                                output.println("Enter Username: ");
+                                username = input.readLine();
+
+                                // while (!input.ready()) {
+                                // Thread.sleep(100);
+                                // }
+                                output.println("Enter Password: ");
+                                password = input.readLine();
+
+                                if (db.loginUser(username, password.toString()) == 0) {
+                                    loggedIn = true;
+                                    output.println("Looged In!");
+                                } else {
+                                    output.println("Login Failed");
+                                }
+
+                                break;
+
+                            case "3":
+                                exit = true;
+                                break;
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+
             }
 
         } catch (IOException e) {
@@ -89,57 +141,14 @@ public class ServerThread extends Thread {
         // close thread and server
         finally {
             try {
-                System.out.println("Connection Closing..");
-                if (is != null) {
-                    is.close();
-                    System.out.println(" Socket Input Stream Closed");
-                }
-
-                if (os != null) {
-                    os.close();
-                    System.out.println("Socket Out Closed");
-                }
-                if (s != null) {
-                    s.close();
-                    System.out.println("Socket Closed");
-                }
-
+                input.close();
+                s.close();
+                output.close();
+                System.out.println("Connection Closed!");
             } catch (IOException ie) {
                 System.out.println("Socket Close Error");
             }
-        } // end finally
-    }
-
-    // prints mainMenu
-    // validates input
-    public static int mainMenu() {
-
-        System.out.println("--- Menu ---");
-        System.out.println("1.Login");
-        System.out.println("2.Register");
-        System.out.println("3.Quit");
-
-        int userInput;
-
-        System.out.print("User select: ");
-        userInput = scanner.nextInt();
-
-        while (userInput > 3 && userInput <= 0) {
-            System.out.print("Input not valid, please enter value as listed above");
-            System.out.print("User select: ");
-            userInput = scanner.nextInt();
         }
-
-        return userInput;
-    }
-
-    // function for registering user
-    // returns 0 for success
-    // returns 1 for error
-    public static int registerUser() {
-
-        return 0;
-
     }
 
 }

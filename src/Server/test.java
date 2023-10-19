@@ -10,7 +10,10 @@ public class test {
         db.registerUser("Jeffery", "123456", "encrypt");
         //db.registerUser("williams", "123456", "encrypt2");
 
-        db.loginUser("Jeffery", "123456");
+        if (db.loginUser("Jeffery", "123456") == 0)
+            System.out.println("Logged In!");
+        else
+            System.out.println("Login failed");
 
         db.listUsers();
     }

@@ -2,6 +2,8 @@ package Server;
 
 import java.sql.*;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 public class DatabaseConnect {
 
     private String dbName;
@@ -69,10 +71,11 @@ public class DatabaseConnect {
     // --- registerUser ---
     // used to register new user
     // returns 0 for success, 1 if user already exists, 2 otherwise
-    public int registerUser(String username, String password, String gpg) {
+    public int registerUser(String username, String password) {
 
         // prepare insert statement
-        String sqlString = "INSERT INTO tbl_user_logins (USERNAME, PASSWORD, GPG_PUB) VALUES (?, ?, ?)";
+        String sqlString = "INSERT INTO tbl_user_logins (USERNAME, PASSWORD) VALUES (?, ?)";
+        String hashPswd = BCrypt.hashpw(password, BCrypt.gensalt());
 
         // connect to database
         // create insert statement template
@@ -81,8 +84,7 @@ public class DatabaseConnect {
 
             // input variables
             prepStatement.setString(1, username);
-            prepStatement.setString(2, password);
-            prepStatement.setString(3, gpg);
+            prepStatement.setString(2, hashPswd);
 
             try {
 
@@ -91,8 +93,10 @@ public class DatabaseConnect {
 
             } catch (SQLException e) {
 
-                if (e.getErrorCode() == 19)
+                if (e.getErrorCode() == 19){
                     System.out.println("User " + username + " already exists!");
+                    return 2;
+                }
                 else
                     System.out.println(e.getMessage());
 
@@ -122,6 +126,7 @@ public class DatabaseConnect {
     public int loginUser(String username, String password) {
 
         String sqlString = "SELECT USERNAME, password FROM tbl_user_logins WHERE username='" + username + "'";
+        String hashPswd = BCrypt.hashpw(password, BCrypt.gensalt());
 
         try (Connection connection = this.connect();
                 Statement stmt = connection.createStatement();
@@ -135,7 +140,9 @@ public class DatabaseConnect {
             }
 
             if (rs.getString("USERNAME").compareTo(username) == 0 &&
-                    rs.getString("PASSWORD").compareTo(password) == 0) {
+                    BCrypt.checkpw(password, rs.getString("PASSWORD"))){
+                    
+                    // rs.getString("PASSWORD").compareTo(hashPswd) == 0) {
 
                 System.out.println("User " + username + " has been logged in!");
                 this.username = username;
