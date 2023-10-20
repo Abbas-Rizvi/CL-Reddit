@@ -1,12 +1,8 @@
 package Server;
 
-import java.io.Console;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class FileServer {
 
@@ -14,7 +10,7 @@ public class FileServer {
 
     // create scanner object
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         // create server socket
         ServerSocket serverSock = null;
@@ -44,10 +40,14 @@ public class FileServer {
                 e.printStackTrace();
                 System.out.println("Connection Error");
 
-            } 
+            } finally {
+                serverSock.close();
+            }
+
 
         }
 
+        
     }
 
 }

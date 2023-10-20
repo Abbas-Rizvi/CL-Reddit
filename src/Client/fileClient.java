@@ -1,7 +1,6 @@
 package Client;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -15,22 +14,21 @@ public class fileClient {
     public static void main(String[] args) {
 
         try {
+            // create socket, reader and output printer
+            // for server connection
             Socket s = new Socket("localhost", 6666);
             BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter output = new PrintWriter(s.getOutputStream(), true);
 
-            // System.out.println(input.readLine());
 
             // use variable to pass data to server
             // written in format 'OPTION:VALUE'
-            // will start by creating and initializing to main menu selection
-
             String userInput;
-            String serverOutput;
             output.flush();
 
-            Boolean menu = true;
 
+            // Loop receivng user input
+            // invoke relevant function as needed
             while (true) {
 
                 userInput = mainMenu();
@@ -66,55 +64,42 @@ public class fileClient {
 
                 }
 
-                // out.flush();
-
-                // if (menu){
-                // menu = false;
-                // userInput = mainMenu();
-                // } else
-                // userInput = scan.nextLine();
-
-                // // print to server & flush buffer
-                // out.println(userInput.trim());
-                // out.flush();
-
-                // while (input.ready()){
-                // serverOutput = input.readLine();
-
-                // if (serverOutput.equals("PRINT_MENU")){
-                // menu =true;
-                // } else {
-                // System.out.println(serverOutput);
-                // }
-                // }
 
             }
 
-            // System.out.println("Done");
-
         } catch (Exception e) {
+            // error handling
             System.out.println(e);
         }
 
     }
 
+    // new post, used to create post in database
+    // parameters passed to corresponding code on server
     private static void newPost(BufferedReader input, PrintWriter output) throws IOException {
 
-        String line = input.readLine();
 
+        // read initial message from server
+        // used to determine if client allowed to progress
+        String line = input.readLine();
         System.out.println(line);
         output.flush();
 
+        // if user not logged in, skip body of code
         if (line.equals("User has not been logged in!")) {
 
         } else {
 
+            // request subject and body for post
+            // other parameters are handled by server using stored credentials
             System.out.print("Subject: ");
             String subject = scan.next();
 
             System.out.print("Body: ");
             String body = scan.next();
 
+
+            // print data to server
             output.println(subject);
             output.flush();
 
@@ -122,18 +107,22 @@ public class fileClient {
             output.flush();
 
 
+            // output server response to client
             System.out.println(input.readLine());
 
         }
 
     }
 
+    // up vote post, used to select post and increase score
+    // parameters passed to corresponding code on server
     private static void upVotePost(BufferedReader input, PrintWriter output) throws IOException {
         System.out.println("Enter post ID to upvote: ");
 
         int usrInput = -1;
         boolean valid = false;
 
+        // validate input to ensure only integer is being entered
         while (valid == false) {
             System.out.print("User Selection: ");
 
@@ -147,32 +136,40 @@ public class fileClient {
             }
         }
 
+        // pass paremeter to server and output server response
         output.println(usrInput);
         System.out.println(input.readLine());
 
     }
 
+    
+    // list posts, used to show all posts on server and creator
+    // parameters passed to corresponding code on server
     private static void listPosts(BufferedReader input, PrintWriter output) throws IOException {
 
         String line;
 
+        // print headers for table
         System.out.println("ID\t" +
                 "USER\t\t" +
                 "SCORE\t" +
                 "SUBJECT\t\t" +
                 "BODY\t\t");
 
+        // create array to store data values for each part of data line
         String[] compononts = new String[5];
 
+        //loop through until all lines are read
         while (!(line = input.readLine()).equals("FINISHED")) {
-            // System.out.println(line);
-
+ 
+            // split the packaged data String using the delimeter 
             try {
                 compononts = line.split(";", 5);
             } catch (ArrayIndexOutOfBoundsException e) {
 
             }
 
+            // print in tabular format
             System.out.println(compononts[0] + "\t" +
                     compononts[1] + "\t\t" +
                     compononts[2] + "\t" +
@@ -186,7 +183,7 @@ public class fileClient {
     // prints main menu for user options
     // returns value for otpion pass from user
     public static String mainMenu() {
-
+ 
         String welcome = "\n\nWelcome to CL-Reddit!\n" +
                 "You will be able to view and post messages to the forum, all over the command line!";
 
@@ -205,6 +202,7 @@ public class fileClient {
         int input;
         boolean valid = false;
 
+        // validate user option input
         while (valid == false) {
             System.out.print("User Selection: ");
 
@@ -229,28 +227,39 @@ public class fileClient {
 
     }
 
+    
+    // register user, used to register a new user on server
+    // parameters passed to corresponding code on server
     public static void registerUser(BufferedReader input, PrintWriter output) throws IOException {
 
+
+        // read in username and password
         System.out.print("Username: ");
         String username = scan.next();
 
         System.out.print("Password: ");
         String password = scan.next();
 
+        //send to server and print response
         output.println(username);
         output.println(password);
 
         System.out.println(input.readLine());
     }
 
+    // login user, used to login existing user
+    // parameters passed to corresponding code on server
     public static void loginUser(BufferedReader input, PrintWriter output) throws IOException {
 
+        // read in username and password
         System.out.print("Username: ");
         String username = scan.next();
 
         System.out.print("Password: ");
         String password = scan.next();
 
+
+        //send to server and print response
         output.println(username);
         output.println(password);
 

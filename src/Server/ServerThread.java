@@ -3,40 +3,36 @@ package Server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.io.Console;
-import java.util.Scanner;
 
 public class ServerThread extends Thread {
 
+    // create variables for recieving input and storing creds
     String line = null;
     BufferedReader input = null;
     PrintWriter output = null;
     Socket s = null;
     static boolean exit;
+
+    // credentials
     private static String username;
     private static String password;
     private static Boolean loggedIn = false;
 
-    private static Scanner scanner = new Scanner(System.in);
+    // dataabase connection
     private static DatabaseConnect db = new DatabaseConnect("test.db");
-    private static Console console = System.console();
 
+    // socket connection
     public ServerThread(Socket s) {
         this.s = s;
     }
 
+    // runs on each thread
     public void run() {
 
-        // database variables
+        // database setup
         db.setupDatabase();
-
-        // flag for exiting program
-        boolean exit = false;
 
         // setup buffered read write for input and output streams
         try {
@@ -50,34 +46,39 @@ public class ServerThread extends Thread {
         try {
 
             // read line from user
-            // line = input.readLine();
+            // store option and value as seperate
+            // input for menu options passed in form
+            // OPTION;VALUE
             String option;
             String value;
 
-            // output.println("Connected!");
+            // loop for each input
             while ((line = input.readLine()) != null) {
 
                 output.flush();
+
+                // split the menu option into subparts
                 String[] parts = line.split(";");
 
                 try {
                     option = parts[0]; // "MENU"
                     value = parts[1]; // "1"
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    // output.println("PRINT_MENU");
-                    // printMenu(output);
                     continue;
                 }
 
-                // System.out.println(option);
-                // System.out.println(value);
-
+                // handle user option
+                // currently only menu implemented
                 switch (option) {
 
                     case ("MENU"):
 
+                        // user selection from menu
                         switch (value) {
 
+                            // login user
+                            // read username and passowrd from client
+                            // pass to database for validation
                             case "1":
 
                                 username = input.readLine();
@@ -92,6 +93,9 @@ public class ServerThread extends Thread {
 
                                 break;
 
+                            // register user
+                            // read username and passowrd from client
+                            // pass to database for validation and signup
                             case "2":
 
                                 username = input.readLine();
@@ -106,19 +110,21 @@ public class ServerThread extends Thread {
 
                                 break;
 
+                            // read posts
+                            // reads all posts stored on database
+                            // prints in form of bundled string, to be processed by client
                             case "3":
-
                                 if (loggedIn) {
 
                                     System.out.println("Reading Posts...");
                                     String[] posts = db.listPosts();
-                                    String postList = "";
 
                                     for (String str : posts) {
                                         output.println(str);
                                         output.flush();
                                     }
 
+                                    // output once all posts have been sent
                                     output.println("FINISHED");
 
                                 } else {
@@ -127,16 +133,17 @@ public class ServerThread extends Thread {
 
                                 break;
 
+                            // upvote post
+                            // receives the post ID from user
+                            // sends command to databse to update
                             case "4":
-
                                 if (loggedIn) {
 
-                                    String line = null;
-                                    // while (input.readLine() == null)
-                                    //     line = input.readLine();
-
+                                    // process user input as integer
+                                    // validate on client side
                                     int postId = Integer.parseInt(input.readLine());
 
+                                    //send to database and output result
                                     db.upVotePost(postId);
                                     System.out.println("Upvote req sent");
                                     output.println("Post has been upvoted!");
@@ -147,6 +154,10 @@ public class ServerThread extends Thread {
 
                                 break;
 
+                            // create new post
+                            // receives the post information from user
+                            // sends command to database to create
+                            // uses stored ussr cred as login required
                             case "5":
                                 if (loggedIn) {
 
@@ -154,10 +165,9 @@ public class ServerThread extends Thread {
 
                                     String subject = input.readLine();
                                     String body = input.readLine();
-    
+
                                     db.newPost(username, subject, body);
                                     output.println("Post Created!");
-
 
                                 } else {
                                     output.println("User has not been logged in!");
@@ -174,6 +184,7 @@ public class ServerThread extends Thread {
 
             }
 
+            // handle all execeptions
         } catch (IOException e) {
 
             line = this.getName(); // reused String line for getting thread name
@@ -186,7 +197,7 @@ public class ServerThread extends Thread {
         // close thread and server
         finally {
             try {
-                loggedIn=false;
+                loggedIn = false;
                 input.close();
                 s.close();
                 output.close();
