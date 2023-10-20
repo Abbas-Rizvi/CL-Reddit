@@ -10,7 +10,7 @@ Register) and registered users are able to create, read and upvote posts. Upvote
 seen on the list of posts to show what's popular in the community.
 
 ![image](https://github.com/Abbas-Rizvi/CL-Reddit/assets/73917749/1b34d1d3-f3d3-457b-89e0-13d40503de67)
-![image](https://github.com/Abbas-Rizvi/CL-Reddit/assets/73917749/d8cc6f31-2187-4249-8139-1eb030109a6a)
+![image](https://github.com/Abbas-Rizvi/CL-Reddit/assets/73917749/7e0d4ad4-6803-46ee-909e-f33750c32cdd)
 
 
 ### Technology
