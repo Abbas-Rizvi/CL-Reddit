@@ -9,6 +9,10 @@ connections via Java Sockets. Users can perform account functions (Login,
 Register) and registered users are able to create, read and upvote posts. Upvotes can be
 seen on the list of posts to show what's popular in the community.
 
+![image](https://github.com/Abbas-Rizvi/CL-Reddit/assets/73917749/1b34d1d3-f3d3-457b-89e0-13d40503de67)
+![image](https://github.com/Abbas-Rizvi/CL-Reddit/assets/73917749/d8cc6f31-2187-4249-8139-1eb030109a6a)
+
+
 ### Technology
 
 The CL-Reddit application used Java sockets and a mutlithreaded server for
