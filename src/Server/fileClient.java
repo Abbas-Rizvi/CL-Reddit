@@ -1,10 +1,12 @@
-package Client;
+package Server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Scanner;
 
 public class fileClient {
@@ -19,6 +21,14 @@ public class fileClient {
             Socket s = new Socket("localhost", 6666);
             BufferedReader input = new BufferedReader(new InputStreamReader(s.getInputStream()));
             PrintWriter output = new PrintWriter(s.getOutputStream(), true);
+
+            // connect to registry
+            Registry registry = null;
+            registry = LocateRegistry.getRegistry(1099);
+            // RemoteService rs = (RemoteService) registry.lookup("RemoteService");
+
+            // Registry registry = LocateRegistry.getRegistry();
+            RemoteService rs = (RemoteService) registry.lookup("RemoteService");
 
 
             // use variable to pass data to server
@@ -47,6 +57,7 @@ public class fileClient {
 
                     case "MENU;3":
                         listPosts(input, output);
+                        
                         break;
                     case "MENU;4":
                         upVotePost(input, output);
@@ -56,7 +67,12 @@ public class fileClient {
                         newPost(input, output);
 
                         break;
+
                     case "MENU;6":
+                        rs.getSortedPosts();
+
+                        break;
+                    case "MENU;7":
                         s.close();
                         break;
                     default:
@@ -193,8 +209,10 @@ public class fileClient {
                 "3.Read Posts\n" +
                 "4.Upvote Post\n" +
                 "5.New Post\n" +
+                "6.Top Posts\n" +
 
-                "6.Quit\n";
+
+                "7.Quit\n";
 
         System.out.println(welcome);
         System.out.println(menu);

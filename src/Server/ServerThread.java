@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 
 public class ServerThread extends Thread implements RemoteService{
 
@@ -27,6 +28,13 @@ public class ServerThread extends Thread implements RemoteService{
     // socket connection
     public ServerThread(Socket s) {
         this.s = s;
+    }
+
+    public ServerThread() throws RemoteException {
+
+        // implement UnicastRemoteObject exportObject function
+        // rather than extending class
+        UnicastRemoteObject.exportObject(this, 0);
     }
 
     // runs on each thread
