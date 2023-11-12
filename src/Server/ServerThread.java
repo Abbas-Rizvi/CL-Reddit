@@ -5,8 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
 
-public class ServerThread extends Thread {
+public class ServerThread extends Thread implements RemoteService{
 
     // create variables for recieving input and storing creds
     String line = null;
@@ -207,6 +208,34 @@ public class ServerThread extends Thread {
             }
         }
 
+    }
+
+    @Override
+    public String[] getSortedPosts() throws RemoteException {
+
+        String output[] = db.listSortedPosts();
+
+        return output;
+    }
+
+    @Override
+    public String[] getSearchedPosts(String searchTerm) throws RemoteException {
+
+        String output[] = db.listSearchedPosts(searchTerm);
+
+        return output;
+    }
+
+    @Override
+    public String[] myPosts(String username) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'myPosts'");
+    }
+
+    @Override
+    public int deletePost(String username, int id) throws RemoteException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deletePost'");
     }
 
 }

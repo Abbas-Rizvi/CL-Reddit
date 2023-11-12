@@ -275,6 +275,45 @@ public class DatabaseConnect {
 
     }
 
+    // --- listSortedPosts ---
+    // used to list all existing posts on server
+    // sorts by score
+    public String[] listSortedPosts() {
+
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC";
+
+        try (Connection connection = this.connect();
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlString)) {
+
+             // create arraylist and convert to string for easy processing by server/client
+             // merge all entries with delimters to create data package
+            ArrayList<String> listItems = new ArrayList<String>();
+            String merged = "";
+
+            while (rs.next()) {
+                merged += (rs.getString("ID") + ";"
+                        + rs.getString("USERNAME") + ";"
+                        + rs.getString("SCORE") + ";"
+                        + rs.getString("SUBJECT") + ";"
+                        + rs.getString("BODY"));
+
+                listItems.add(merged);
+                merged = "";
+
+            }
+
+            // return merged list as array
+            return listItems.toArray(new String[listItems.size()]);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+
+    }
+
     // --- upVotePost ---
     // used to increase score on existing post
     public int upVotePost(int postNum) {
@@ -299,5 +338,87 @@ public class DatabaseConnect {
         return 1;
 
     }
+
+
+
+ 
+    // --- list Searched Posts ---
+    // used to list all existing posts on server
+    // sorts by score, searches for subject
+    public String[] listSearchedPosts(String searchTerm) {
+
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC WHERE SUBJECT LIKE %" + searchTerm + "%;";
+
+        try (Connection connection = this.connect();
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlString)) {
+
+             // create arraylist and convert to string for easy processing by server/client
+             // merge all entries with delimters to create data package
+            ArrayList<String> listItems = new ArrayList<String>();
+            String merged = "";
+
+            while (rs.next()) {
+                merged += (rs.getString("ID") + ";"
+                        + rs.getString("USERNAME") + ";"
+                        + rs.getString("SCORE") + ";"
+                        + rs.getString("SUBJECT") + ";"
+                        + rs.getString("BODY"));
+
+                listItems.add(merged);
+                merged = "";
+
+            }
+
+            // return merged list as array
+            return listItems.toArray(new String[listItems.size()]);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+
+    }
+
+    // --- list user Posts ---
+    // used to list all existing posts on server
+    // looks for posts created by the user
+    public String[] listUserPosts(String username) {
+
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC WHERE USERNAME = " + username + ";";
+
+        try (Connection connection = this.connect();
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sqlString)) {
+
+             // create arraylist and convert to string for easy processing by server/client
+             // merge all entries with delimters to create data package
+            ArrayList<String> listItems = new ArrayList<String>();
+            String merged = "";
+
+            while (rs.next()) {
+                merged += (rs.getString("ID") + ";"
+                        + rs.getString("USERNAME") + ";"
+                        + rs.getString("SCORE") + ";"
+                        + rs.getString("SUBJECT") + ";"
+                        + rs.getString("BODY"));
+
+                listItems.add(merged);
+                merged = "";
+
+            }
+
+            // return merged list as array
+            return listItems.toArray(new String[listItems.size()]);
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+
+    }
+
 
 }
