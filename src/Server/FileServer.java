@@ -13,7 +13,7 @@ public class FileServer {
 
     // create scanner object
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         // create server socket
         ServerSocket serverSock = null;
@@ -29,6 +29,7 @@ public class FileServer {
             Registry registry = LocateRegistry.createRegistry(1099);
             // Registry registry = LocateRegistry.getRegistry(1099);
             registry.bind("RemoteService", stub);
+            System.out.println("RMI Registry Started!");
 
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());
@@ -61,9 +62,7 @@ public class FileServer {
                 e.printStackTrace();
                 System.out.println("Connection Error");
 
-            } finally {
-                serverSock.close();
-            }
+            } 
         }
 
     }

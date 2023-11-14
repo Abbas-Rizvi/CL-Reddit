@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ServerThread extends Thread implements RemoteService{
+public class ServerThread extends Thread {
 
     // create variables for recieving input and storing creds
     String line = null;
@@ -28,13 +28,6 @@ public class ServerThread extends Thread implements RemoteService{
     // socket connection
     public ServerThread(Socket s) {
         this.s = s;
-    }
-
-    public ServerThread() throws RemoteException {
-
-        // implement UnicastRemoteObject exportObject function
-        // rather than extending class
-        UnicastRemoteObject.exportObject(this, 0);
     }
 
     // runs on each thread
@@ -152,7 +145,7 @@ public class ServerThread extends Thread implements RemoteService{
                                     // validate on client side
                                     int postId = Integer.parseInt(input.readLine());
 
-                                    //send to database and output result
+                                    // send to database and output result
                                     db.upVotePost(postId);
                                     System.out.println("Upvote req sent");
                                     output.println("Post has been upvoted!");
@@ -183,7 +176,52 @@ public class ServerThread extends Thread implements RemoteService{
                                 }
 
                                 break;
+
+                            // get sorted list
+                            // handle rest through RMI on client side
+                            case "6":
+
+                                // run code to verify authentication
+                                // handle rest through RMI
+                                isAuthenticated();
+
+                                break;
+
+                            case "7":
+
+                                // run code to verify authentication
+                                // handle rest through RMI
+                                isAuthenticated();
+
+                                break;
+
+
+                            case "8":
+
+                                // run code to verify authentication
+                                // handle rest through RMI
+                                isAuthenticated();
+
+                                break;
+
+
+                            case "9":
+
+                                // run code to verify authentication
+                                // handle rest through RMI
+                                isAuthenticated();
+
+                                break;
+
+                            case "10":
+
+                                // run code to verify authentication
+                                // handle rest through RMI
+                                isAuthenticated();
+
+                                break;
                         }
+
 
                         break;
 
@@ -218,32 +256,24 @@ public class ServerThread extends Thread implements RemoteService{
 
     }
 
-    @Override
-    public String[] getSortedPosts() throws RemoteException {
+    // get username variable
+    public String getUsername() {
 
-        String output[] = db.listSortedPosts();
-
-        return output;
+        return username;
     }
 
-    @Override
-    public String[] getSearchedPosts(String searchTerm) throws RemoteException {
+    // return if user is authenticated
+    // return username
+    public void isAuthenticated() {
+        // pass the username and login status to client
 
-        String output[] = db.listSearchedPosts(searchTerm);
+        if (loggedIn) {
+            output.println("logged in");
+            output.println(username);
+        } else {
+            output.println("not logged in");
+        }
 
-        return output;
-    }
-
-    @Override
-    public String[] myPosts(String username) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'myPosts'");
-    }
-
-    @Override
-    public int deletePost(String username, int id) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletePost'");
     }
 
 }

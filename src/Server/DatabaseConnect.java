@@ -169,7 +169,6 @@ public class DatabaseConnect {
         return 1;
     }
 
-
     // --- listUsers ---
     // used to list all existing users
     // used for debugging
@@ -247,8 +246,8 @@ public class DatabaseConnect {
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlString)) {
 
-             // create arraylist and convert to string for easy processing by server/client
-             // merge all entries with delimters to create data package
+            // create arraylist and convert to string for easy processing by server/client
+            // merge all entries with delimters to create data package
             ArrayList<String> listItems = new ArrayList<String>();
             String merged = "";
 
@@ -280,14 +279,14 @@ public class DatabaseConnect {
     // sorts by score
     public String[] listSortedPosts() {
 
-        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC";
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE DESC";
 
         try (Connection connection = this.connect();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlString)) {
 
-             // create arraylist and convert to string for easy processing by server/client
-             // merge all entries with delimters to create data package
+            // create arraylist and convert to string for easy processing by server/client
+            // merge all entries with delimters to create data package
             ArrayList<String> listItems = new ArrayList<String>();
             String merged = "";
 
@@ -339,22 +338,19 @@ public class DatabaseConnect {
 
     }
 
-
-
- 
     // --- list Searched Posts ---
     // used to list all existing posts on server
     // sorts by score, searches for subject
     public String[] listSearchedPosts(String searchTerm) {
 
-        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC WHERE SUBJECT LIKE %" + searchTerm + "%;";
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts WHERE SUBJECT LIKE '%" + searchTerm + "%'";
 
         try (Connection connection = this.connect();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlString)) {
 
-             // create arraylist and convert to string for easy processing by server/client
-             // merge all entries with delimters to create data package
+            // create arraylist and convert to string for easy processing by server/client
+            // merge all entries with delimters to create data package
             ArrayList<String> listItems = new ArrayList<String>();
             String merged = "";
 
@@ -386,14 +382,15 @@ public class DatabaseConnect {
     // looks for posts created by the user
     public String[] listUserPosts(String username) {
 
-        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts ORDER BY SCORE ASC WHERE USERNAME = " + username + ";";
+        String sqlString = "SELECT ID, USERNAME, SCORE, SUBJECT, BODY FROM tbl_posts WHERE USERNAME = \"" + username + "\" ORDER BY SCORE DESC;";
+                
 
         try (Connection connection = this.connect();
                 Statement stmt = connection.createStatement();
                 ResultSet rs = stmt.executeQuery(sqlString)) {
 
-             // create arraylist and convert to string for easy processing by server/client
-             // merge all entries with delimters to create data package
+            // create arraylist and convert to string for easy processing by server/client
+            // merge all entries with delimters to create data package
             ArrayList<String> listItems = new ArrayList<String>();
             String merged = "";
 
@@ -420,5 +417,26 @@ public class DatabaseConnect {
 
     }
 
+    // delete a post from the database
+    public int deletePost(String username, int id) {
+
+        String sqlString = "DELETE FROM tbl_posts WHERE USERNAME = \"" + username + "\" AND ID = " + id + ";";
+
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sqlString)) {
+
+            // set the corresponding param
+            // pstmt.setInt(1, id);
+            // execute the delete statement
+            pstmt.executeUpdate();
+
+            System.out.println("Delete command sent!");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return 1;
+        }
+
+        return 0;
+    }
 
 }

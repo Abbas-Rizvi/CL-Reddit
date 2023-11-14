@@ -17,4 +17,8 @@ public interface RemoteService extends Remote{
     // delete post
     int deletePost(String username, int id) throws RemoteException;
 
+    // show friend posts
+    String[] viewFriendPosts(String username) throws RemoteException;
+    
+
 }

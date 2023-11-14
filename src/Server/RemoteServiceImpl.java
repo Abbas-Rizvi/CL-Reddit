@@ -12,32 +12,41 @@ public class RemoteServiceImpl extends Thread implements RemoteService{
     //     UnicastRemoteObject.exportObject(this, 0);
     // }
 
+    private static DatabaseConnect db = new DatabaseConnect("test.db");
 
     @Override
     public String[] getSortedPosts() throws RemoteException {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Unimplemented method 'getSortedPosts'");
 
-        String[] test = {"this", "is", "test"};
-        return test;
+        String[] posts = db.listSortedPosts();
+        return posts;
     }
 
     @Override
     public String[] getSearchedPosts(String searchTerm) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getSearchedPosts'");
+
+        String[] posts = db.listSearchedPosts(searchTerm);
+        return posts;
     }
 
     @Override
     public String[] myPosts(String username) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'myPosts'");
+
+        String[] posts = db.listUserPosts(username);
+        return posts;
     }
 
     @Override
     public int deletePost(String username, int id) throws RemoteException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deletePost'");
+
+        int posts = db.deletePost(username, id);
+        return  posts;
+    }
+
+    @Override
+    public String[] viewFriendPosts(String username) {
+
+        String[] posts = db.listUserPosts(username);
+        return posts;
     }
 
 }

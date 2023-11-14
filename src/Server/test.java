@@ -21,6 +21,12 @@ public class test {
         db.newPost("Jimmy", "DOG", "MONKEY MONKEY MONKEY MONKEY");
         System.out.println(db.upVotePost(2));
         db.listPosts();
+
+        db.deletePost("Jimmy",4);
+
+        db.listUserPosts("Jimmy");
+        db.listSearchedPosts("Dog");
+
     }
 }
     
